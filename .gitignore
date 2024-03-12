@@ -1,2 +1,5 @@
 Builds/
 JuceLibraryCode/
+AudioPlayer/AudioPlayer/Builds/
+AudioPlayer/AudioPlayer/JuceLibraryCode/
+SamplerPluginDemo/
