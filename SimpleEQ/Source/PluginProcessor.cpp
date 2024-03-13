@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -24,18 +16,15 @@ SimpleEQAudioProcessor::SimpleEQAudioProcessor()
 {
 }
 
-SimpleEQAudioProcessor::~SimpleEQAudioProcessor()
-{
+SimpleEQAudioProcessor::~SimpleEQAudioProcessor() {
 }
 
 //==============================================================================
-const juce::String SimpleEQAudioProcessor::getName() const
-{
+const juce::String SimpleEQAudioProcessor::getName() const {
     return JucePlugin_Name;
 }
 
-bool SimpleEQAudioProcessor::acceptsMidi() const
-{
+bool SimpleEQAudioProcessor::acceptsMidi() const {
 #if JucePlugin_WantsMidiInput
     return true;
 #else
@@ -43,8 +32,7 @@ bool SimpleEQAudioProcessor::acceptsMidi() const
 #endif
 }
 
-bool SimpleEQAudioProcessor::producesMidi() const
-{
+bool SimpleEQAudioProcessor::producesMidi() const {
 #if JucePlugin_ProducesMidiOutput
     return true;
 #else
@@ -52,8 +40,7 @@ bool SimpleEQAudioProcessor::producesMidi() const
 #endif
 }
 
-bool SimpleEQAudioProcessor::isMidiEffect() const
-{
+bool SimpleEQAudioProcessor::isMidiEffect() const {
 #if JucePlugin_IsMidiEffect
     return true;
 #else
@@ -61,38 +48,29 @@ bool SimpleEQAudioProcessor::isMidiEffect() const
 #endif
 }
 
-double SimpleEQAudioProcessor::getTailLengthSeconds() const
-{
+double SimpleEQAudioProcessor::getTailLengthSeconds() const {
     return 0.0;
 }
 
-int SimpleEQAudioProcessor::getNumPrograms()
-{
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-    // so this should be at least 1, even if you're not really implementing programs.
+int SimpleEQAudioProcessor::getNumPrograms() {
+    return 1;
 }
 
-int SimpleEQAudioProcessor::getCurrentProgram()
-{
+int SimpleEQAudioProcessor::getCurrentProgram() {
     return 0;
 }
 
-void SimpleEQAudioProcessor::setCurrentProgram(int index)
-{
-}
+void SimpleEQAudioProcessor::setCurrentProgram(int index) { }
 
-const juce::String SimpleEQAudioProcessor::getProgramName(int index)
-{
+const juce::String SimpleEQAudioProcessor::getProgramName(int index) {
     return {};
 }
 
-void SimpleEQAudioProcessor::changeProgramName(int index, const juce::String& newName)
-{
+void SimpleEQAudioProcessor::changeProgramName(int index, const juce::String& newName) {
 }
 
 //==============================================================================
-void SimpleEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
-{
+void SimpleEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
     juce::dsp::ProcessSpec spec;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = 1;
@@ -104,28 +82,19 @@ void SimpleEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
     updateFilters();
 }
 
-void SimpleEQAudioProcessor::releaseResources()
-{
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
-}
+void SimpleEQAudioProcessor::releaseResources() { }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool SimpleEQAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
-{
+bool SimpleEQAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const {
 #if JucePlugin_IsMidiEffect
     juce::ignoreUnused(layouts);
     return true;
 #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
+    
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
         && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
 #if ! JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
@@ -136,20 +105,14 @@ bool SimpleEQAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) 
 }
 #endif
 
-void SimpleEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
-{
+void SimpleEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
         buffer.clear(i, 0, buffer.getNumSamples());
+    }
 
     updateFilters();
 
@@ -164,30 +127,19 @@ void SimpleEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
 }
 
 //==============================================================================
-bool SimpleEQAudioProcessor::hasEditor() const
-{
-    return true; // (change this to false if you choose to not supply an editor)
+bool SimpleEQAudioProcessor::hasEditor() const {
+    return true;
 }
 
-juce::AudioProcessorEditor* SimpleEQAudioProcessor::createEditor()
-{
+juce::AudioProcessorEditor* SimpleEQAudioProcessor::createEditor() {
     return new juce::GenericAudioProcessorEditor(*this);
     //return new SimpleEQAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void SimpleEQAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
-{
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
-}
+void SimpleEQAudioProcessor::getStateInformation(juce::MemoryBlock& destData) { }
 
-void SimpleEQAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
-{
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-}
+void SimpleEQAudioProcessor::setStateInformation(const void* data, int sizeInBytes) { }
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts) {
     ChainSettings settings;
@@ -211,12 +163,8 @@ void SimpleEQAudioProcessor::updatePeakFilter(const ChainSettings& chainSettings
         juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels)
     );
 
-    updateCoefficients(leftChain.get<ChainPositions::Peak>().coefficients, *peakCoefficients);
-    updateCoefficients(rightChain.get<ChainPositions::Peak>().coefficients, *peakCoefficients);
-}
-
-void SimpleEQAudioProcessor::updateCoefficients(Coefficients& old, const Coefficients& replacements) {
-    *old = *replacements;
+    leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
 }
 
 void SimpleEQAudioProcessor::updateLowCutFilters(const ChainSettings& chainSettings) {
@@ -321,8 +269,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::crea
 }
 
 //==============================================================================
-// This creates new instances of the plugin..
-juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
-{
+juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
     return new SimpleEQAudioProcessor();
 }
