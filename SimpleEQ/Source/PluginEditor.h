@@ -241,11 +241,16 @@ class SimpleEQAudioProcessorEditor : public juce::AudioProcessorEditor {
         ResponseCurveComponent responseCurveComponent;
 
         using APVTS = juce::AudioProcessorValueTreeState;
-        using Attachment = APVTS::SliderAttachment;
 
+        using Attachment = APVTS::SliderAttachment;
         Attachment peakFreqAttachment, peakGainAttachment, peakQualityAttachment,
             lowCutFreqAttachment, lowCutSlopeAttachment,
             highCutFreqAttachment, highCutSlopeAttachment;
+
+        juce::ToggleButton lowCutBypassButton, highCutBypassButton, peakBypassButton, analyzerEnabledButton;
+
+        using ButtonAttachment = APVTS::ButtonAttachment;
+        ButtonAttachment lowCutBypassButtonAttachment, highCutBypassButtonAttachment, peakBypassButtonAttachment, analyzerEnabledButtonAttachment;
 
         std::vector<juce::Component*> getComps();
 

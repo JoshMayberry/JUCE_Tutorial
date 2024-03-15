@@ -128,6 +128,7 @@ struct ChainSettings {
     float peakFreq{ 0 }, peakGainInDecibels{ 0 }, peakQuality{ 1.f };
     float lowCutFreq{ 0 }, highCutFreq{ 0 };
     Slope lowCutSlope{ Slope::Slope_12 }, highCutSlope{ Slope::Slope_12 };
+    bool lowCutBypassed{ false }, highCutBypassed{ false }, peakBypassed{ false };
 };
 
 using Filter = juce::dsp::IIR::Filter<float>;
@@ -156,7 +157,6 @@ template<typename ChainType, typename CoefficientType> void updateCutFilter(Chai
     chain.template setBypassed<2>(true);
     chain.template setBypassed<3>(true);
     switch (slope) {
-
     case Slope_48: {
         update<3>(chain, coefficients);
         // Falls Through
