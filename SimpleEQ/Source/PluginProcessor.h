@@ -240,6 +240,10 @@ class SimpleEQAudioProcessor : public juce::AudioProcessor {
         static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
         juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout()};
 
+        using BlockType = juce::AudioBuffer<float>;
+        SingleChannelSampleFifo<BlockType> leftChannelFifo { Channel::Left };
+        SingleChannelSampleFifo<BlockType> rightChannelFifo { Channel::Right };
+
     private:
         MonoChain leftChain, rightChain;
 
@@ -249,6 +253,7 @@ class SimpleEQAudioProcessor : public juce::AudioProcessor {
         void updateHighCutFilters(const ChainSettings& chainSettings);
         void updateFilters();
 
+        juce::dsp::Oscillator<float> osc; // Used to verify the spectrum analyzer is working correctly
         //==============================================================================
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQAudioProcessor)
 };

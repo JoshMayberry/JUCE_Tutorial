@@ -115,7 +115,7 @@ template<typename PathType> struct AnalyzerPathGenerator {
 
             if (!std::isnan(y) && !std::isinf(y)) {
                 auto binFreq = binNum * binWidth;
-                auto normalizedBinX = juce::mapFromLog10(binFreq, 1.f, 20000.f);
+                auto normalizedBinX = juce::mapFromLog10(binFreq, 20.f, 20000.f);
                 int binX = std::floor(normalizedBinX * width);
                 p.lineTo(binX, y);
             }
@@ -199,6 +199,13 @@ struct ResponseCurveComponent : public juce::AudioProcessorEditor,
         juce::Image background;
         juce::Rectangle<int> getRenderArea();
         juce::Rectangle<int> getAnalysisArea();
+
+        SingleChannelSampleFifo<SimpleEQAudioProcessor::BlockType>* leftChannelFifo;
+        juce::AudioBuffer<float> monoBuffer; // Used to move things along the chain to visualize the audio
+
+        FFTDataGenerator<std::vector<float>> leftChannelFFTDataGenerator;
+        AnalyzerPathGenerator<juce::Path> pathProducer;
+        juce::Path leftChannelFFTPath;
 };
 
 class SimpleEQAudioProcessorEditor : public juce::AudioProcessorEditor {
